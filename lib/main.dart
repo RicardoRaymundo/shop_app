@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ThemeData()
                 .colorScheme
                 .copyWith(primary: Colors.purple, secondary: Colors.deepOrange)),
-        home: ProductsOverviewPage(),
+        home: const ProductsOverviewPage(),
         routes: {
           AppRoutes.productDetail:(context) => ProductDetailPage()
         },
