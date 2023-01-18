@@ -15,6 +15,24 @@ class CartItemWidget extends StatelessWidget {
       direction: DismissDirection.endToStart,
       onDismissed: (_) => Provider.of<Cart>(context, listen: false)
           .removeItem(cartItem.productId),
+      confirmDismiss: (_) {
+        // Retorna valor boolean pelo pop(), resolvendo a Future
+        return showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Tem certeza?'),
+            content: Text('Quer remover o item do carrinho?'),
+            actions: [
+              TextButton(onPressed: () {
+                 Navigator.of(ctx).pop(false);
+              }, child: Text('Não')),
+              TextButton(onPressed: () {
+                 Navigator.of(ctx).pop(true);
+              }, child: Text('Sim')),
+            ],
+          ),
+        );
+      },
       background: Container(
         alignment: Alignment.centerRight,
         color: Theme.of(context).colorScheme.error,
