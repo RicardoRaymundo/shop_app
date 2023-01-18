@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/components/product_item.dart';
+import 'package:shop_app/components/product_grid_item.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:shop_app/models/product_list.dart';
 
@@ -31,7 +31,7 @@ class ProductGrid extends StatelessWidget {
         // Usar o .value para quando já estiver instanciada a classe que tem o mixin com o ChangeNotifier
         return ChangeNotifierProvider.value(
           value: loadedProducts[index],
-          child: const ProductItem(),
+          child: const ProductGridItem(),
         );
       },
     );
