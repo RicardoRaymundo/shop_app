@@ -1,10 +1,15 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:shop_app/data/dummy_data.dart';
 import 'package:shop_app/models/product.dart';
+import 'package:http/http.dart' as http;
 
 class ProductList with ChangeNotifier {
+  final String _baseUrl =
+      'https://shop-app-ed049-default-rtdb.europe-west1.firebasedatabase.app/';
+
   final List<Product> _items = dummyProducts;
 
   List<Product> get items => [..._items];
@@ -35,8 +40,28 @@ class ProductList with ChangeNotifier {
   }
 
   void addProduct(Product product) {
-    _items.add(product);
-    notifyListeners();
+    final postProduct = http.post(
+      Uri.parse('$_baseUrl/products.json'),
+      body: jsonEncode({
+        "title": product.title,
+        "description": product.description,
+        "price": product.price,
+        "imageUrl": product.imageUrl,
+        "isFavorite": product.isFavorite,
+      }),
+    );
+
+    postProduct.then((response) {
+      final id = jsonDecode(response.body)['name'];
+      _items.add(Product(
+        id: id,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+      ));
+      notifyListeners();
+    });
   }
 
   void updateProduct(Product product) {
