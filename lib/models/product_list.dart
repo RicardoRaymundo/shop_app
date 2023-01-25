@@ -2,15 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
-import 'package:shop_app/data/dummy_data.dart';
+import 'package:shop_app/exceptions/http_exception.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_app/utils/constants.dart';
 
 class ProductList with ChangeNotifier {
-  final String _baseUrl =
-      'https://shop-app-ed049-default-rtdb.europe-west1.firebasedatabase.app/';
-
-  final List<Product> _items = dummyProducts;
+  final List<Product> _items = [];
 
   List<Product> get items => [..._items];
 
@@ -71,15 +69,15 @@ class ProductList with ChangeNotifier {
       }),
     );
 
-      final id = jsonDecode(response.body)['name'];
-      _items.add(Product(
-        id: id,
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl,
-      ));
-      notifyListeners();
+    final id = jsonDecode(response.body)['name'];
+    _items.add(Product(
+      id: id,
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+    ));
+    notifyListeners();
   }
 
   Future<void> updateProduct(Product product) async {
@@ -120,9 +118,9 @@ class ProductList with ChangeNotifier {
           msg: 'Não foi possível excluir o produto',
           statusCode: response.statusCode,
         );
+      }
     }
   }
-}
 
   Future<void> toggleFavoriteProduct(Product product) async {
     final response = await http.patch(
@@ -136,14 +134,4 @@ class ProductList with ChangeNotifier {
       );
     }
   }
-
-void showFavoriteOnly() {
-    _showFavoriteOnly = true;
-    notifyListeners();
-  }
-
-  void showAll() {
-    _showFavoriteOnly = false;
-    notifyListeners();
-  }
- */
+}
