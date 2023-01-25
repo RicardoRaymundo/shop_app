@@ -11,6 +11,7 @@ class ProductGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final Product product = Provider.of<Product>(context, listen: false);
     final Cart cart = Provider.of<Cart>(context, listen: false);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -22,8 +23,16 @@ class ProductGridItem extends StatelessWidget {
               color: Theme.of(context).colorScheme.secondary,
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
-              onPressed: () {
-                product.toggleFavorite();
+              onPressed: () async {
+                try {
+                  await product.toggleFavorite(context);
+                } catch (error) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(error.toString()),
+                    ),
+                  );
+                }
               },
             ),
           ),
