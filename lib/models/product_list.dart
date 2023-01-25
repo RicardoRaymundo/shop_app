@@ -53,15 +53,15 @@ class ProductList with ChangeNotifier {
     );
 
     if (hasId) {
-      updateProduct(product);
+      return updateProduct(product);
     } else {
-      addProduct(product);
+      return addProduct(product);
     }
   }
 
-  void addProduct(Product product) {
-    final postProduct = http.post(
-      Uri.parse('$_baseUrl/products.json'),
+  Future<void> addProduct(Product product) async {
+    final response = await http.post(
+      Uri.parse('${Constants.productBaseUrl}.json'),
       body: jsonEncode({
         "title": product.title,
         "description": product.description,
@@ -71,7 +71,6 @@ class ProductList with ChangeNotifier {
       }),
     );
 
-    postProduct.then((response) {
       final id = jsonDecode(response.body)['name'];
       _items.add(Product(
         id: id,
@@ -81,12 +80,22 @@ class ProductList with ChangeNotifier {
         imageUrl: product.imageUrl,
       ));
       notifyListeners();
-    });
   }
 
-  void updateProduct(Product product) {
+  Future<void> updateProduct(Product product) async {
     int index = _items.indexWhere((p) => p.id == product.id);
+
     if (index >= 0) {
+      await http.patch(
+        Uri.parse('${Constants.productBaseUrl}/${product.id}.json'),
+        body: jsonEncode({
+          "title": product.title,
+          "description": product.description,
+          "price": product.price,
+          "imageUrl": product.imageUrl,
+        }),
+      );
+
       _items[index] = product;
       notifyListeners();
     }
