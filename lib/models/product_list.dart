@@ -21,7 +21,27 @@ class ProductList with ChangeNotifier {
     return _items.length;
   }
 
-  void saveProduct(Map<String, Object> data) {
+  Future<void> loadProducts() async {
+    _items.clear();
+    final response = await http.get(
+      Uri.parse('${Constants.productBaseUrl}.json'),
+    );
+
+    if (response.body == 'null') return;
+
+    Map<String, dynamic> data = jsonDecode(response.body);
+    data.forEach((productId, productData) {
+      _items.add(Product(
+          id: productId,
+          title: productData['title'],
+          description: productData['description'],
+          price: productData['price'],
+          imageUrl: productData['imageUrl']));
+      notifyListeners();
+    });
+  }
+
+  Future<void> saveProduct(Map<String, Object> data) {
     final bool hasId = data['id'] != null;
 
     final product = Product(
