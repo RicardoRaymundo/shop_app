@@ -124,15 +124,17 @@ class ProductList with ChangeNotifier {
   }
 }
 
-/*
-bool _showFavoriteOnly = false;
+  Future<void> toggleFavoriteProduct(Product product) async {
+    final response = await http.patch(
+        Uri.parse('${Constants.productBaseUrl}/${product.id}.json'),
+        body: jsonEncode({"isFavorite": product.isFavorite}));
 
-  List<Product> get items {
-    if(_showFavoriteOnly) {
-      return _items.where((product) => product.isFavorite).toList();
+    if (response.statusCode >= 400) {
+      throw HttpException(
+        msg: 'Não foi alternar o valor de favorito do produto',
+        statusCode: response.statusCode,
+      );
     }
-
-    return [..._items];
   }
 
 void showFavoriteOnly() {
