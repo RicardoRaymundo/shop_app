@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/models/auth.dart';
 import 'package:shop_app/models/cart.dart';
 import 'package:shop_app/models/order_list.dart';
 import 'package:shop_app/models/product_list.dart';
+import 'package:shop_app/pages/auth_or_home_page.dart';
+import 'package:shop_app/pages/auth_page.dart';
 import 'package:shop_app/pages/cart_page.dart';
 import 'package:shop_app/pages/orders_page.dart';
 import 'package:shop_app/pages/product_detail_page.dart';
@@ -22,20 +25,36 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ProductList()),
+        ChangeNotifierProvider(create: (_) => Auth()),
+        // Proxy Provider para providers que dependem de outros
+        ChangeNotifierProxyProvider<Auth, ProductList>(
+          create: (_) => ProductList('', []),
+          update: (ctx, authProvider, previous) {
+            return ProductList(
+                authProvider.getToken ?? '', previous?.items ?? []);
+          },
+        ),
+        ChangeNotifierProxyProvider<Auth, OrderList>(
+          create: (_) => OrderList('', []),
+          update: (ctx, authProvider, previous) {
+            return OrderList(
+                authProvider.getToken ?? '', previous?.items ?? []);
+          },
+        ),
         ChangeNotifierProvider(create: (_) => Cart()),
-        ChangeNotifierProvider(create: (_) => OrderList())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
-            primarySwatch: Colors.purple,
-            fontFamily: 'Lato',
-            colorScheme: ThemeData().colorScheme.copyWith(
-                primary: Colors.purple, secondary: Colors.deepOrange)),
+          primarySwatch: Colors.purple,
+          fontFamily: 'Lato',
+          colorScheme: ThemeData()
+              .colorScheme
+              .copyWith(primary: Colors.purple, secondary: Colors.deepOrange),
+        ),
         routes: {
-          AppRoutes.home: (context) => ProductsOverviewPage(),
+          AppRoutes.authOrHome: (context) => AuthOrHomePage(),
           AppRoutes.productDetail: (context) => ProductDetailPage(),
           AppRoutes.cart: (context) => CartPage(),
           AppRoutes.orders: (context) => OrdersPage(),
