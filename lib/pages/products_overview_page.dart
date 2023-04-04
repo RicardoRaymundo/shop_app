@@ -62,7 +62,7 @@ class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
                 Navigator.of(context).pushNamed(AppRoutes.cart);
               },
             ),
-            builder: (context, cart, child) => Badge(
+            builder: (context, cart, child) => CartBadge(
               value: cart.itemsCount.toString(),
               child: child!,
             ),
