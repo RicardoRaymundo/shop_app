@@ -8,9 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:shop_app/utils/constants.dart';
 
 class ProductList with ChangeNotifier {
-  ProductList(this._token, this._items);
+  ProductList([this._token = '', this._uid = '', this._items = const []]);
 
   final String _token;
+  final String _uid;
   List<Product> _items = [];
 
   List<Product> get items => [..._items];
@@ -30,14 +31,28 @@ class ProductList with ChangeNotifier {
 
     if (response.body == 'null') return;
 
+    final favResponse = await http.get(
+      Uri.parse(
+        '${Constants.userFavoriteUrl}/$_uid.json?auth=$_token',
+      ),
+    );
+
+    Map<String, dynamic> favData =
+        favResponse.body == 'null' ? {} : jsonDecode(favResponse.body);
+
     Map<String, dynamic> data = jsonDecode(response.body);
     data.forEach((productId, productData) {
-      _items.add(Product(
+      final isfavorite = favData[productId] ?? false;
+      _items.add(
+        Product(
           id: productId,
           title: productData['title'],
           description: productData['description'],
           price: productData['price'],
-          imageUrl: productData['imageUrl']));
+          imageUrl: productData['imageUrl'],
+          isFavorite: isfavorite,
+        ),
+      );
       notifyListeners();
     });
   }
@@ -68,7 +83,6 @@ class ProductList with ChangeNotifier {
         "description": product.description,
         "price": product.price,
         "imageUrl": product.imageUrl,
-        "isFavorite": product.isFavorite,
       }),
     );
 
@@ -128,14 +142,16 @@ class ProductList with ChangeNotifier {
   }
 
   Future<void> toggleFavoriteProduct(Product product) async {
-    final response = await http.patch(
-        Uri.parse(
-            '${Constants.productBaseUrl}/${product.id}.json?auth=$_token'),
-        body: jsonEncode({"isFavorite": product.isFavorite}));
+    final response = await http.put(
+      Uri.parse(
+        '${Constants.userFavoriteUrl}/$_uid/${product.id}.json?auth=$_token',
+      ),
+      body: jsonEncode(product.isFavorite),
+    );
 
     if (response.statusCode >= 400) {
       throw HttpException(
-        msg: 'Não foi alternar o valor de favorito do produto',
+        msg: 'Não possível foi alternar o valor de favorito do produto',
         statusCode: response.statusCode,
       );
     }
