@@ -182,7 +182,7 @@ class _AuthFormState extends State<AuthForm>
                     minHeight: _isLogin() ? 0 : 60,
                     maxHeight: _isLogin() ? 0 : 120,
                   ),
-                  duration: const Duration(microseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.linear,
                   child: FadeTransition(
                     opacity: _opacityAnimation!,
