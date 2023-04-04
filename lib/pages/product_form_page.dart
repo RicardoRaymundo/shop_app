@@ -198,7 +198,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
                         Expanded(
                           child: TextFormField(
                             decoration: const InputDecoration(
-                                labelText: 'Url da Imagem'),
+                              labelText: 'Url da Imagem',
+                            ),
                             controller: _imgUrlController,
                             focusNode: _imageUrlFocus,
                             keyboardType: TextInputType.url,
@@ -210,7 +211,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               if (!_isValidImageUrl(_url ?? '')) {
                                 return 'Informe Url válida';
                               }
-
                               return null;
                             },
                           ),
